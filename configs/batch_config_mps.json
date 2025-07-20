@@ -1,0 +1,46 @@
+{
+  "prompts": [
+    {
+      "positive": "serene forest scene with sunbeams, natural lighting, peaceful atmosphere",
+      "negative": "blurry, low quality, distorted, dark"
+    },
+    {
+      "positive": "minimalist modern architecture, clean lines, glass and steel",
+      "negative": "blurry, low quality, distorted, cluttered"
+    }
+  ],
+  "base_models": [
+    "juggernautXL_v9Rdphoto2Lightning.safetensors"
+  ],
+  "refiners": [
+    "None"
+  ],
+  "loras": [
+    ["pixel-art-xl-v1.1.safetensors", 0.3]
+  ],
+  "settings": {
+    "steps": 25,
+    "cfg_scale": 7.0,
+    "width": 1024,
+    "height": 1024,
+    "batch_size": 2,
+    "scheduler": "karras",
+    "sampler": "dpmpp_2m_sde",
+    "precision": "fp16",
+    "enable_optimizations": true,
+    "device_specific": {
+      "mps_optimizations": [
+        "attention_slicing",
+        "memory_efficient_attention"
+      ],
+      "fallback_to_cpu": true,
+      "reduce_memory_usage": true
+    }
+  },
+  "output": {
+    "folder": "batch_outputs/mps_optimized",
+    "save_metadata": true,
+    "format": "png",
+    "quality": 90
+  }
+}

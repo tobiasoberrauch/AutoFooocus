@@ -1,0 +1,51 @@
+{
+  "prompts": [
+    {
+      "positive": "a majestic mountain landscape at golden hour, professional photography, ultra detailed, 8k",
+      "negative": "blurry, low quality, distorted, amateur, grainy"
+    },
+    {
+      "positive": "futuristic cyberpunk cityscape, neon lights, rain, atmospheric, cinematic",
+      "negative": "blurry, low quality, distorted, oversaturated"
+    },
+    {
+      "positive": "portrait of a wise old wizard, fantasy art, detailed beard, magical robes",
+      "negative": "blurry, low quality, distorted, cartoon"
+    }
+  ],
+  "base_models": [
+    "juggernautXL_v9Rdphoto2Lightning.safetensors"
+  ],
+  "refiners": [
+    "None"
+  ],
+  "loras": [
+    ["pixel-art-xl-v1.1.safetensors", 0.5]
+  ],
+  "settings": {
+    "steps": 30,
+    "cfg_scale": 7.5,
+    "width": 1024,
+    "height": 1024,
+    "batch_size": 4,
+    "scheduler": "dpm_2m_karras",
+    "sampler": "dpmpp_2m_sde_gpu",
+    "precision": "fp16",
+    "enable_optimizations": true,
+    "device_specific": {
+      "cuda_optimizations": [
+        "attention_slicing",
+        "vae_slicing",
+        "torch_compile"
+      ],
+      "memory_efficient": true,
+      "use_flash_attention": true
+    }
+  },
+  "output": {
+    "folder": "batch_outputs/cuda_optimized",
+    "save_metadata": true,
+    "format": "png",
+    "quality": 95
+  }
+}

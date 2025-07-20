@@ -1,0 +1,41 @@
+{
+  "prompts": [
+    {
+      "positive": "simple landscape, mountains, clear sky, digital art",
+      "negative": "blurry, low quality, complex, detailed"
+    }
+  ],
+  "base_models": [
+    "juggernautXL_v9Rdphoto2Lightning.safetensors"
+  ],
+  "refiners": [
+    "None"
+  ],
+  "loras": [],
+  "settings": {
+    "steps": 15,
+    "cfg_scale": 6.0,
+    "width": 512,
+    "height": 512,
+    "batch_size": 1,
+    "scheduler": "euler_a",
+    "sampler": "euler_a",
+    "precision": "fp32",
+    "enable_optimizations": true,
+    "device_specific": {
+      "cpu_optimizations": [
+        "reduce_resolution",
+        "fewer_steps",
+        "simpler_prompts"
+      ],
+      "use_threading": true,
+      "memory_conservative": true
+    }
+  },
+  "output": {
+    "folder": "batch_outputs/cpu_optimized",
+    "save_metadata": true,
+    "format": "png",
+    "quality": 85
+  }
+}

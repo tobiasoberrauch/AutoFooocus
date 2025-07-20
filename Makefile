@@ -24,8 +24,12 @@ help:
 	@echo "  $(YELLOW)download-models$(NC)    - Download essential models"
 	@echo "  $(YELLOW)download-recommended$(NC) - Download recommended models"
 	@echo "  $(YELLOW)list-models$(NC)        - List downloaded models"
-	@echo "  $(YELLOW)test-single$(NC)        - Test with single prompt"
+	@echo "  $(YELLOW)detect-device$(NC)      - Detect and optimize for your device"
+	@echo "  $(YELLOW)test-single$(NC)        - Test with single prompt (device optimized)"
 	@echo "  $(YELLOW)test-config$(NC)        - Test with batch configuration"
+	@echo "  $(YELLOW)test-cuda$(NC)          - Test with CUDA optimized config"
+	@echo "  $(YELLOW)test-mps$(NC)           - Test with MPS optimized config"
+	@echo "  $(YELLOW)test-cpu$(NC)           - Test with CPU optimized config"
 	@echo "  $(YELLOW)status$(NC)             - Show installation status"
 	@echo "  $(YELLOW)clean$(NC)              - Clean installation"
 	@echo ""
@@ -139,6 +143,48 @@ PROMPT ?= a majestic mountain landscape at sunset
 NEGATIVE ?= blurry, low quality, distorted
 STEPS ?= 30
 COUNT ?= 1
+
+# Device detection and optimization
+detect-device:
+	@if [ ! -d "Fooocus" ]; then \
+		echo "$(RED)Error: Fooocus not installed. Run 'make install' first.$(NC)"; \
+		exit 1; \
+	fi
+	@echo "$(YELLOW)Detecting device and creating optimized configuration...$(NC)"
+	@cd Fooocus && \
+		source venv/bin/activate && \
+		python ../scripts/device_optimizer.py
+
+# Device-specific tests
+test-cuda:
+	@if [ ! -d "Fooocus" ]; then \
+		echo "$(RED)Error: Fooocus not installed. Run 'make install' first.$(NC)"; \
+		exit 1; \
+	fi
+	@echo "$(YELLOW)Testing with CUDA optimized configuration...$(NC)"
+	@cd Fooocus && \
+		source venv/bin/activate && \
+		python working_batch.py --config ../configs/batch_config_cuda.json
+
+test-mps:
+	@if [ ! -d "Fooocus" ]; then \
+		echo "$(RED)Error: Fooocus not installed. Run 'make install' first.$(NC)"; \
+		exit 1; \
+	fi
+	@echo "$(YELLOW)Testing with MPS optimized configuration...$(NC)"
+	@cd Fooocus && \
+		source venv/bin/activate && \
+		python working_batch.py --config ../configs/batch_config_mps.json
+
+test-cpu:
+	@if [ ! -d "Fooocus" ]; then \
+		echo "$(RED)Error: Fooocus not installed. Run 'make install' first.$(NC)"; \
+		exit 1; \
+	fi
+	@echo "$(YELLOW)Testing with CPU optimized configuration...$(NC)"
+	@cd Fooocus && \
+		source venv/bin/activate && \
+		python working_batch.py --config ../configs/batch_config_cpu.json
 
 # Quick test with defaults
 quick-test:

@@ -75,6 +75,7 @@ copy_scripts() {
     # Copy Python scripts
     cp scripts/working_batch.py "$WORK_DIR/"
     cp scripts/view_results.py "$WORK_DIR/"
+    cp scripts/device_optimizer.py "$WORK_DIR/"
     
     # Copy shell scripts
     cp scripts/run_batch.sh "$WORK_DIR/"
@@ -82,6 +83,9 @@ copy_scripts() {
     
     # Copy configs
     cp configs/batch_config.json "$WORK_DIR/"
+    cp configs/batch_config_cuda.json "$WORK_DIR/"
+    cp configs/batch_config_mps.json "$WORK_DIR/"
+    cp configs/batch_config_cpu.json "$WORK_DIR/"
     
     echo -e "${GREEN}✓ Scripts copied${NC}"
 }

@@ -17,6 +17,16 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 # Set environment before importing anything
 os.environ['PYTORCH_ENABLE_MPS_FALLBACK'] = '1'
 
+# Import device optimizer
+try:
+    from device_optimizer import detect_device, create_device_config
+    DEVICE_CONFIG = create_device_config(detect_device())
+except ImportError:
+    DEVICE_CONFIG = {
+        "device_settings": {"device": "cpu", "precision": "fp32", "optimizations": []},
+        "generation_settings": {"default_steps": 20}
+    }
+
 # Clear sys.argv to prevent argument conflicts
 original_argv = sys.argv.copy()
 sys.argv = [sys.argv[0]]
@@ -30,9 +40,48 @@ from modules.util import generate_temp_filename
 import numpy as np
 
 
+def apply_device_optimizations():
+    """Apply device-specific optimizations"""
+    device_settings = DEVICE_CONFIG["device_settings"]
+    
+    print(f"🔧 Optimizing for {device_settings['device_name']} ({device_settings['device'].upper()})")
+    
+    # Apply precision settings
+    if device_settings["precision"] == "fp16":
+        os.environ['FOOOCUS_USE_FP16'] = '1'
+    
+    # Apply memory optimizations
+    if "attention_slicing" in device_settings["optimizations"]:
+        os.environ['FOOOCUS_ATTENTION_SLICING'] = '1'
+    
+    if "vae_slicing" in device_settings["optimizations"]:
+        os.environ['FOOOCUS_VAE_SLICING'] = '1'
+    
+    if "cpu_offload" in device_settings["optimizations"]:
+        os.environ['FOOOCUS_CPU_OFFLOAD'] = '1'
+    
+    if "sequential_cpu_offload" in device_settings["optimizations"]:
+        os.environ['FOOOCUS_SEQUENTIAL_CPU_OFFLOAD'] = '1'
+    
+    if "low_vram" in device_settings["optimizations"]:
+        os.environ['FOOOCUS_LOW_VRAM'] = '1'
+    
+    # Set device preference
+    if device_settings["device"] == "mps":
+        os.environ['PYTORCH_ENABLE_MPS_FALLBACK'] = '1'
+        os.environ['FOOOCUS_DEVICE'] = 'mps'
+    elif device_settings["device"] == "cuda":
+        os.environ['FOOOCUS_DEVICE'] = 'cuda'
+    else:
+        os.environ['FOOOCUS_DEVICE'] = 'cpu'
+
+
 def initialize_fooocus():
-    """Initialize Fooocus pipeline"""
+    """Initialize Fooocus pipeline with optimizations"""
     print("Initializing Fooocus...")
+    
+    # Apply device optimizations first
+    apply_device_optimizations()
     
     # Convert LoRA format and filter enabled ones
     filtered_loras = []
@@ -47,13 +96,28 @@ def initialize_fooocus():
         loras=filtered_loras
     )
     
-    print("✓ Fooocus initialized")
+    print("✓ Fooocus initialized with device optimizations")
 
 
-def generate_image_direct(prompt, negative_prompt="", steps=30, cfg=7.0, width=1024, height=1024, seed=-1):
-    """Generate image using direct pipeline calls"""
+def generate_image_direct(prompt, negative_prompt="", steps=None, cfg=7.0, width=1024, height=1024, seed=-1):
+    """Generate image using direct pipeline calls with device optimization"""
+    
+    # Use device-optimized defaults
+    device_settings = DEVICE_CONFIG["device_settings"]
+    generation_settings = DEVICE_CONFIG["generation_settings"]
+    
+    if steps is None:
+        steps = generation_settings.get("default_steps", 30)
+    
+    # Adjust settings based on device
+    if device_settings["device"] == "cpu":
+        # Reduce resolution for CPU to improve speed
+        if width > 768 or height > 768:
+            width, height = 768, 768
+            print(f"📱 Adjusted resolution to {width}x{height} for CPU performance")
     
     print(f"Generating: {prompt[:50]}...")
+    print(f"Device: {device_settings['device_name']} | Steps: {steps} | Resolution: {width}x{height}")
     
     # Generate seed if needed
     if seed == -1:
@@ -68,7 +132,8 @@ def generate_image_direct(prompt, negative_prompt="", steps=30, cfg=7.0, width=1
     modules.patch.sharpness = 1.5
     
     # Create empty latent
-    latent = modules.core.generate_empty_latent(width=width, height=height, batch_size=1)
+    batch_size = device_settings.get("batch_size", 1)
+    latent = modules.core.generate_empty_latent(width=width, height=height, batch_size=batch_size)
     
     # Encode prompts
     positive_cond, negative_cond = pipeline.clip_encode_single(
@@ -80,9 +145,14 @@ def generate_image_direct(prompt, negative_prompt="", steps=30, cfg=7.0, width=1
     # Run sampling
     print("Running diffusion...")
     
-    # Set up sampler parameters
-    sampler_name = "dpmpp_2m_sde_gpu"
-    scheduler_name = "karras"
+    # Device-optimized sampler settings
+    scheduler_name = generation_settings.get("scheduler", "karras")
+    if device_settings["device"] == "cpu":
+        sampler_name = "euler_a"  # Faster on CPU
+    elif device_settings["device"] == "mps":
+        sampler_name = "dpmpp_2m_sde"  # Better MPS compatibility
+    else:
+        sampler_name = "dpmpp_2m_sde_gpu"  # Full GPU acceleration
     
     # Perform sampling
     samples = pipeline.ksampler(

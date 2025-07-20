@@ -20,12 +20,13 @@ make view-results
 
 ## Features
 
-- **Automated Installation**: One-command setup of Fooocus
-- **Model Management**: Download and organize base models, LoRAs, and VAEs
-- **Batch Processing**: Test multiple prompts with different model combinations
-- **Result Analysis**: HTML viewer for comparing generated images
-- **Flexible Configuration**: JSON-based batch configurations
-- **Progress Tracking**: Real-time generation progress
+- **🚀 Automated Installation**: One-command setup of Fooocus
+- **🔧 Device Optimization**: Automatic CUDA/MPS/CPU detection and optimization
+- **📦 Model Management**: Download and organize base models, LoRAs, and VAEs
+- **⚡ Batch Processing**: Test multiple prompts with different model combinations
+- **📊 Result Analysis**: HTML viewer for comparing generated images
+- **🎛️ Flexible Configuration**: JSON-based batch configurations with device-specific templates
+- **📈 Progress Tracking**: Real-time generation progress with performance metrics
 
 ## Installation
 
@@ -52,9 +53,31 @@ This will:
 
 ## Usage
 
+### Device Optimization
+
+AutoFooocus automatically detects and optimizes for your hardware:
+
+```bash
+# Detect your device and create optimized configuration
+make detect-device
+
+# Test with device-optimized settings
+make test-single PROMPT="your prompt here"
+
+# Test with specific device configurations
+make test-cuda    # NVIDIA GPU optimized
+make test-mps     # Apple Silicon optimized  
+make test-cpu     # CPU-only optimized
+```
+
+**Performance expectations:**
+- **🚀 CUDA (12GB+ VRAM)**: 30-60s per image, batch size 4, fp16
+- **⚡ MPS (Apple Silicon)**: 45-90s per image, batch size 2, fp16
+- **🐌 CPU**: 5-15 minutes per image, batch size 1, fp32, reduced resolution
+
 ### Single Prompt Generation
 ```bash
-# Basic usage
+# Basic usage (automatically optimized for your device)
 make test-single PROMPT="your prompt here"
 
 # With custom settings
