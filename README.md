@@ -1,6 +1,12 @@
 # AutoFooocus
 
-**Automated Batch Processing for Fooocus** - An intelligent system for testing different AI model combinations to find the best settings for your prompts.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![CI](https://github.com/tobiasoberrauch/AutoFooocus/workflows/CI/badge.svg)](https://github.com/tobiasoberrauch/AutoFooocus/actions)
+[![Platform](https://img.shields.io/badge/platform-linux%20%7C%20macos%20%7C%20windows-lightgrey)](https://github.com/tobiasoberrauch/AutoFooocus)
+[![Python](https://img.shields.io/badge/python-3.8%2B-blue)](https://www.python.org/downloads/)
+[![Device Support](https://img.shields.io/badge/devices-CUDA%20%7C%20MPS%20%7C%20CPU-green)](https://github.com/tobiasoberrauch/AutoFooocus/blob/main/DEVICE_OPTIMIZATION.md)
+
+**Automated Batch Processing for Fooocus** - An intelligent shell-first system for testing different AI model combinations with automatic device optimization.
 
 ## Quick Start
 
@@ -302,10 +308,37 @@ python working_batch.py     # Python script usage
 4. **Compare Results**: Use HTML viewer to analyze different models
 5. **Backup Important**: Save good results before experimenting
 
-## License
+## 🤝 Contributing
 
-This project uses Fooocus, which is licensed under the Apache License 2.0.
+We welcome contributions! See our [Contributing Guide](CONTRIBUTING.md) for details.
 
-## Contributing
+### 🐛 Found a Bug?
+- Check [existing issues](https://github.com/tobiasoberrauch/AutoFooocus/issues)
+- Use our [bug report template](https://github.com/tobiasoberrauch/AutoFooocus/issues/new?template=bug_report.yml)
 
-Feel free to submit issues and enhancement requests!
+### 💡 Have an Idea?
+- Use our [feature request template](https://github.com/tobiasoberrauch/AutoFooocus/issues/new?template=feature_request.yml)
+- Check the [project roadmap](https://github.com/tobiasoberrauch/AutoFooocus/projects)
+
+### 🔧 Device Optimization
+- Help improve performance on your hardware
+- Use our [device optimization template](https://github.com/tobiasoberrauch/AutoFooocus/issues/new?template=device_optimization.yml)
+
+## 📊 Project Stats
+
+![GitHub stars](https://img.shields.io/github/stars/tobiasoberrauch/AutoFooocus?style=social)
+![GitHub forks](https://img.shields.io/github/forks/tobiasoberrauch/AutoFooocus?style=social)
+![GitHub issues](https://img.shields.io/github/issues/tobiasoberrauch/AutoFooocus)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/tobiasoberrauch/AutoFooocus)
+
+## 🙏 Acknowledgments
+
+- **[Fooocus](https://github.com/lllyasviel/Fooocus)** - The amazing base framework
+- **Contributors** - Everyone who helps improve AutoFooocus
+- **Community** - Users providing feedback and device optimization data
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+AutoFooocus builds upon [Fooocus](https://github.com/lllyasviel/Fooocus), which is licensed under the Apache License 2.0.

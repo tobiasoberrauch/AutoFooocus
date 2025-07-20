@@ -1,0 +1,93 @@
+name: ✨ Feature Request
+description: Suggest a new feature or enhancement
+title: "[Feature] "
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a new feature! Please provide details below.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission Checklist
+      description: Please verify these steps before submitting
+      options:
+        - label: I searched existing issues and didn't find a duplicate
+          required: true
+        - label: I checked if this feature exists in the latest version
+          required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Description
+      description: What problem does this feature solve?
+      placeholder: Describe the problem you're trying to solve
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: What would you like to see implemented?
+      placeholder: Describe your ideal solution
+    validations:
+      required: true
+
+  - type: dropdown
+    id: device_impact
+    attributes:
+      label: Device Impact
+      description: Which devices would benefit from this feature?
+      multiple: true
+      options:
+        - NVIDIA GPU (CUDA)
+        - Apple Silicon (MPS)
+        - CPU
+        - All devices
+    validations:
+      required: true
+
+  - type: dropdown
+    id: complexity
+    attributes:
+      label: Implementation Complexity
+      description: How complex do you think this feature would be?
+      options:
+        - Simple (small script change)
+        - Medium (new functionality)
+        - Complex (major architectural change)
+        - Not sure
+    validations:
+      required: false
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: What other solutions have you considered?
+    validations:
+      required: false
+
+  - type: textarea
+    id: examples
+    attributes:
+      label: Usage Examples
+      description: How would this feature be used?
+      placeholder: |
+        ```bash
+        make new-feature PARAM="value"
+        ```
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Add any other context, mockups, or references
+    validations:
+      required: false

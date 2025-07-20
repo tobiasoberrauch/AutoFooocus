@@ -1,0 +1,122 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.8, 3.9, "3.10", "3.11"]
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y git curl
+
+    - name: Check shell scripts syntax
+      run: |
+        # Check all shell scripts for syntax errors
+        find scripts/ -name "*.sh" -exec bash -n {} \;
+        
+    - name: Validate Makefile
+      run: |
+        # Check Makefile syntax
+        make help
+
+    - name: Test device optimizer (CPU only)
+      run: |
+        # Test device detection without GPU
+        python scripts/device_optimizer.py --config-only --output test_device_config.json
+        test -f test_device_config.json
+
+    - name: Validate JSON configs
+      run: |
+        # Validate all JSON configuration files
+        python -m json.tool configs/batch_config.json > /dev/null
+        python -m json.tool configs/batch_config_cpu.json > /dev/null
+        python -m json.tool configs/batch_config_cuda.json > /dev/null
+        python -m json.tool configs/batch_config_mps.json > /dev/null
+        python -m json.tool configs/models_essential.json > /dev/null
+        python -m json.tool configs/models_recommended.json > /dev/null
+
+    - name: Check documentation links
+      run: |
+        # Check for broken internal links in markdown files
+        grep -r "\]\(" *.md | grep -v "http" | while read line; do
+          file=$(echo "$line" | cut -d: -f1)
+          link=$(echo "$line" | sed 's/.*](\([^)]*\)).*/\1/')
+          if [[ "$link" != "#"* ]] && [[ ! -f "$link" ]]; then
+            echo "Broken link in $file: $link"
+            exit 1
+          fi
+        done
+
+  test-setup-dry-run:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+
+    - name: Test setup script (dry run)
+      run: |
+        # Test setup script without actually installing Fooocus
+        bash scripts/setup_fooocus.sh help
+        
+    - name: Test download script (dry run)
+      run: |
+        # Test download script functions
+        bash scripts/download_models.sh check-space
+        bash scripts/download_models.sh help
+
+  test-macos:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+
+    - name: Test device detection on macOS
+      run: |
+        # Test MPS detection on macOS
+        python scripts/device_optimizer.py --config-only
+        
+    - name: Test shell scripts on macOS
+      run: |
+        # Test shell scripts are compatible with macOS
+        bash scripts/setup_fooocus.sh help
+        bash scripts/download_models.sh help
+
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Run security scan
+      uses: github/super-linter@v4
+      env:
+        DEFAULT_BRANCH: main
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        VALIDATE_BASH: true
+        VALIDATE_PYTHON: true
+        VALIDATE_JSON: true
+        VALIDATE_MARKDOWN: true

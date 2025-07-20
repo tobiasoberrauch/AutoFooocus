@@ -1,0 +1,86 @@
+name: 🔧 Device Optimization
+description: Report device-specific performance issues or suggest optimizations
+title: "[Device] "
+labels: ["optimization", "device-specific"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Help us improve AutoFooocus performance on your device! 
+
+  - type: dropdown
+    id: device_type
+    attributes:
+      label: Device Type
+      description: What device are you optimizing for?
+      options:
+        - NVIDIA GPU (CUDA)
+        - Apple Silicon (MPS)
+        - Intel/AMD CPU
+        - Other GPU (OpenCL, etc.)
+    validations:
+      required: true
+
+  - type: textarea
+    id: device_specs
+    attributes:
+      label: Device Specifications
+      description: Detailed device information
+      value: |
+        - GPU Model: [e.g., RTX 4090, M2 Pro, Intel UHD 770]
+        - VRAM/Memory: [e.g., 24GB VRAM, 16GB Unified Memory]
+        - Driver Version: [e.g., NVIDIA 535.xx, macOS 14.0]
+        - CUDA Version: [if applicable]
+    validations:
+      required: true
+
+  - type: dropdown
+    id: issue_type
+    attributes:
+      label: Issue Type
+      description: What kind of optimization issue?
+      options:
+        - Performance is slower than expected
+        - Out of memory errors
+        - Device not detected correctly
+        - Suboptimal settings
+        - New optimization suggestion
+    validations:
+      required: true
+
+  - type: textarea
+    id: current_performance
+    attributes:
+      label: Current Performance
+      description: Describe current performance and what you expected
+      placeholder: |
+        - Current generation time: 120 seconds per image
+        - Expected generation time: 60 seconds per image
+        - Memory usage: 18GB / 24GB VRAM
+        - Settings used: make test-single PROMPT="..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: device_detection
+    attributes:
+      label: Device Detection Output
+      description: Output from `make detect-device`
+      render: shell
+    validations:
+      required: false
+
+  - type: textarea
+    id: optimization_suggestions
+    attributes:
+      label: Optimization Suggestions
+    validations:
+      required: false
+
+  - type: textarea
+    id: benchmarks
+    attributes:
+      label: Benchmark Results
+      description: If you've tested different settings, share the results
+    validations:
+      required: false
