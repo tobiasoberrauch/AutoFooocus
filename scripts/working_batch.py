@@ -11,8 +11,15 @@ import time
 from datetime import datetime
 from pathlib import Path
 
-# Add Fooocus to path
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+# Add Fooocus to path and change working directory
+script_dir = os.path.dirname(os.path.abspath(__file__))
+fooocus_dir = os.path.join(script_dir, '..', 'Fooocus')
+fooocus_dir = os.path.abspath(fooocus_dir)
+sys.path.append(fooocus_dir)
+
+# Change to Fooocus directory so paths work correctly
+original_cwd = os.getcwd()
+os.chdir(fooocus_dir)
 
 # Set environment before importing anything
 os.environ['PYTORCH_ENABLE_MPS_FALLBACK'] = '1'
@@ -83,6 +90,26 @@ def initialize_fooocus():
     # Apply device optimizations first
     apply_device_optimizations()
     
+    # Download required models if missing
+    print("Checking required model files...")
+    from modules.model_loader import load_file_from_url
+    
+    # Download VAE approximation models
+    vae_approx_filenames = [
+        ('xlvaeapp.pth', 'https://huggingface.co/lllyasviel/misc/resolve/main/xlvaeapp.pth'),
+        ('vaeapp_sd15.pth', 'https://huggingface.co/lllyasviel/misc/resolve/main/vaeapp_sd15.pt'),
+    ]
+    
+    for file_name, url in vae_approx_filenames:
+        load_file_from_url(url=url, model_dir=config.path_vae_approx, file_name=file_name)
+    
+    # Download expansion model if missing
+    load_file_from_url(
+        url='https://huggingface.co/lllyasviel/misc/resolve/main/fooocus_expansion.bin',
+        model_dir=config.path_fooocus_expansion,
+        file_name='pytorch_model.bin'
+    )
+    
     # Convert LoRA format and filter enabled ones
     filtered_loras = []
     for lora in config.default_loras:
@@ -135,12 +162,9 @@ def generate_image_direct(prompt, negative_prompt="", steps=None, cfg=7.0, width
     batch_size = device_settings.get("batch_size", 1)
     latent = modules.core.generate_empty_latent(width=width, height=height, batch_size=batch_size)
     
-    # Encode prompts
-    positive_cond, negative_cond = pipeline.clip_encode_single(
-        clip=pipeline.clip,
-        positive_prompt=prompt,
-        negative_prompt=negative_prompt
-    )
+    # Encode prompts using the pipeline's clip encoding function
+    positive_cond = pipeline.clip_encode([prompt])
+    negative_cond = pipeline.clip_encode([negative_prompt])
     
     # Run sampling
     print("Running diffusion...")
@@ -154,9 +178,9 @@ def generate_image_direct(prompt, negative_prompt="", steps=None, cfg=7.0, width
     else:
         sampler_name = "dpmpp_2m_sde_gpu"  # Full GPU acceleration
     
-    # Perform sampling
-    samples = pipeline.ksampler(
-        model=pipeline.model_base,
+    # Perform sampling using the core ksampler
+    samples = modules.core.ksampler(
+        model=pipeline.final_unet,
         seed=seed,
         steps=steps,
         cfg=cfg,
@@ -170,7 +194,7 @@ def generate_image_direct(prompt, negative_prompt="", steps=None, cfg=7.0, width
     
     # Decode VAE
     print("Decoding image...")
-    pixels = pipeline.vae_decode(vae=pipeline.vae, samples=samples)
+    pixels = modules.core.decode_vae(vae=pipeline.final_vae, latent_image=samples)
     
     # Convert to numpy and save
     pixels = pixels.cpu().numpy()
@@ -189,7 +213,11 @@ def generate_image_direct(prompt, negative_prompt="", steps=None, cfg=7.0, width
     image = Image.fromarray(pixels)
     
     # Generate filename
-    temp_filename = generate_temp_filename(folder=Path.cwd(), extension='png')
+    date_string, temp_filename, filename = generate_temp_filename(folder=Path("outputs"), extension='png')
+    
+    # Ensure output directory exists
+    os.makedirs(os.path.dirname(temp_filename), exist_ok=True)
+    
     image.save(temp_filename, 'PNG')
     
     print(f"✓ Image saved to: {temp_filename}")

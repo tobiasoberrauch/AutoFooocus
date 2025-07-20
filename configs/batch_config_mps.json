@@ -9,15 +9,15 @@
       "negative": "blurry, low quality, distorted, cluttered"
     }
   ],
-  "base_models": [
-    "juggernautXL_v9Rdphoto2Lightning.safetensors"
-  ],
-  "refiners": [
-    "None"
-  ],
-  "loras": [
-    ["pixel-art-xl-v1.1.safetensors", 0.3]
-  ],
+  "models": {
+    "base": [
+      "juggernautXL_v9.safetensors"
+    ],
+    "refiner": ["None"],
+    "loras": [
+      [{"name": "pixel-art-xl.safetensors", "weight": 0.3}]
+    ]
+  },
   "settings": {
     "steps": 25,
     "cfg_scale": 7.0,
@@ -37,10 +37,5 @@
       "reduce_memory_usage": true
     }
   },
-  "output": {
-    "folder": "batch_outputs/mps_optimized",
-    "save_metadata": true,
-    "format": "png",
-    "quality": 90
-  }
+  "output_dir": "batch_outputs/mps_optimized"
 }
