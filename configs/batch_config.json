@@ -1,0 +1,38 @@
+{
+  "description": "Standard batch configuration for testing models",
+  "prompts": [
+    {
+      "positive": "professional portrait photography, studio lighting, sharp focus",
+      "negative": "cartoon, anime, blurry, low quality"
+    },
+    {
+      "positive": "majestic mountain landscape at sunset, cinematic photography",
+      "negative": "blurry, oversaturated, amateur"
+    },
+    {
+      "positive": "futuristic cityscape at night, neon lights, cyberpunk style",
+      "negative": "cartoon, painting, illustration, low quality"
+    }
+  ],
+  "models": {
+    "base": [
+      "sd_xl_base_1.0.safetensors",
+      "juggernautXL_v9.safetensors",
+      "realvisxlV40.safetensors"
+    ],
+    "refiner": ["None", "sd_xl_refiner_1.0.safetensors"],
+    "loras": [
+      [],
+      [{"name": "pixel-art-xl.safetensors", "weight": 1.0}],
+      [{"name": "watercolor_v1_sdxl.safetensors", "weight": 0.8}]
+    ]
+  },
+  "settings": {
+    "steps": 30,
+    "cfg_scale": 7.0,
+    "width": 1024,
+    "height": 1024,
+    "batch_size": 1
+  },
+  "output_dir": "batch_outputs"
+}

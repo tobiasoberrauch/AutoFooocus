@@ -1,0 +1,27 @@
+{
+  "description": "Test different style LoRAs with same prompt",
+  "prompts": [
+    {
+      "positive": "serene japanese garden with cherry blossoms",
+      "negative": "blurry, low quality, oversaturated"
+    }
+  ],
+  "models": {
+    "base": ["sd_xl_base_1.0.safetensors"],
+    "refiner": ["None"],
+    "loras": [
+      [],
+      [{"name": "pixel-art-xl.safetensors", "weight": 1.0}],
+      [{"name": "watercolor_v1_sdxl.safetensors", "weight": 0.8}],
+      [{"name": "sd_xl_offset_example-lora_1.0.safetensors", "weight": 0.5}]
+    ]
+  },
+  "settings": {
+    "steps": 30,
+    "cfg_scale": 7.0,
+    "width": 1024,
+    "height": 1024,
+    "batch_size": 1
+  },
+  "output_dir": "batch_outputs"
+}

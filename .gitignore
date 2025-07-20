@@ -1,0 +1,45 @@
+# Fooocus installation (cloned from GitHub)
+Fooocus/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
+env/
+*.egg-info/
+
+# Model files (large)
+*.safetensors
+*.ckpt
+*.pth
+*.pt
+
+# Generated images
+batch_outputs/
+outputs/
+results/
+
+# Temporary files
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Backups
+*.tar.gz
+*.zip
+*.bak
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~

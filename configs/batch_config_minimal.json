@@ -1,0 +1,22 @@
+{
+  "description": "Minimal test configuration",
+  "prompts": [
+    {
+      "positive": "beautiful mountain landscape",
+      "negative": "blurry, low quality"
+    }
+  ],
+  "models": {
+    "base": ["sd_xl_base_1.0.safetensors"],
+    "refiner": ["None"],
+    "loras": [[]]
+  },
+  "settings": {
+    "steps": 20,
+    "cfg_scale": 7.0,
+    "width": 1024,
+    "height": 1024,
+    "batch_size": 1
+  },
+  "output_dir": "batch_outputs"
+}
